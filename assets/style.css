@@ -1,0 +1,367 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  --navy: #1b365d;
+  --navy-dark: #112440;
+  --green: #1e7e48;
+  --green-hover: #176338;
+  --gold: #d97706;
+  --bg-page: #f8fafc;
+  --border-subtle: #e2e8f0;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+}
+
+* {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+body {
+  background-color: var(--bg-page);
+  color: var(--text-main);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Navbar Minimalis */
+.navbar-minimal {
+  background-color: #ffffff;
+  border-bottom: 1px solid var(--border-subtle);
+  padding: 0.9rem 0;
+}
+
+.brand-mark {
+  width: 34px;
+  height: 34px;
+  background-color: var(--navy);
+  color: #ffffff;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+}
+
+.nav-link-clean {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  padding: 0.45rem 0.9rem;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.nav-link-clean:hover {
+  background-color: #f1f5f9;
+  color: var(--navy);
+}
+
+.btn-admin-minimal {
+  border: 1px solid var(--border-subtle);
+  background-color: #ffffff;
+  color: var(--navy);
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.45rem 1rem;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.btn-admin-minimal:hover {
+  border-color: var(--navy);
+  background-color: var(--navy);
+  color: #ffffff;
+}
+
+/* Kartu Login Elegan */
+.auth-card {
+  background-color: #ffffff;
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px -10px rgba(15, 23, 42, 0.06);
+  max-width: 410px;
+  width: 100%;
+  padding: 2.25rem;
+}
+
+.accent-line {
+  width: 36px;
+  height: 3px;
+  background-color: var(--gold);
+  border-radius: 2px;
+  margin-bottom: 1rem;
+}
+
+.form-label-clean {
+  font-size: 0.825rem;
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 0.4rem;
+}
+
+.input-clean {
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  padding: 0.7rem 0.9rem;
+  font-size: 0.925rem;
+  color: var(--text-main);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.input-clean:focus {
+  border-color: var(--navy);
+  box-shadow: 0 0 0 3px rgba(27, 54, 93, 0.08);
+  outline: none;
+}
+
+.btn-submit-clean {
+  background-color: var(--green);
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition: background-color 0.2s ease, transform 0.15s ease;
+}
+
+.btn-submit-clean:hover {
+  background-color: var(--green-hover);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+/* Kotak Demo Ringkas */
+.demo-strip {
+  background-color: #f8fafc;
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  padding: 0.75rem 0.9rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.btn-fill-link {
+  color: var(--navy);
+  font-weight: 600;
+  font-size: 0.78rem;
+  text-decoration: none;
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+.btn-fill-link:hover {
+  text-decoration: underline;
+}
+
+.footer-minimal {
+  border-top: 1px solid var(--border-subtle);
+  background-color: #ffffff;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+/* CSS: VOTING & HASIL SEMENTARA */
+
+/* Kartu Kandidat Minimalis */
+.candidate-card-clean {
+  background-color: #ffffff;
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.candidate-card-clean:hover {
+  transform: translateY(-4px);
+  border-color: var(--navy);
+  box-shadow: 0 12px 24px -8px rgba(15, 23, 42, 0.08);
+}
+
+.candidate-photo-box {
+  position: relative;
+  height: 220px;
+  background-color: #f8fafc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 16px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.candidate-photo-box img {
+  width: 165px;
+  height: 165px;
+  object-fit: cover;
+  object-position: center top;
+  border-radius: 50%; /* Membuat bingkai foto bulat rapi ala surat suara resmi */
+  border: 4px solid #ffffff;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+}
+.urut-pill {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  background-color: var(--navy);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 0.35rem 0.8rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.btn-outline-clean {
+  border: 1px solid var(--border-subtle);
+  background-color: #ffffff;
+  color: var(--text-main);
+  border-radius: 10px;
+  padding: 0.6rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.btn-outline-clean:hover {
+  background-color: #f1f5f9;
+  border-color: #cbd5e1;
+  color: var(--navy);
+}
+
+/* Halaman Hasil Sementara */
+.stat-box-clean {
+  background-color: #ffffff;
+  border: 1px solid var(--border-subtle);
+  border-radius: 14px;
+  padding: 1.25rem 1.5rem;
+}
+
+.result-card-clean {
+  background-color: #ffffff;
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
+  padding: 1.75rem;
+  box-shadow: 0 10px 30px -10px rgba(15, 23, 42, 0.04);
+}
+
+.progress-clean {
+  height: 12px;
+  background-color: #e2e8f0;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress-bar-navy {
+  background-color: var(--navy);
+}
+
+.progress-bar-green {
+  background-color: var(--green);
+}
+
+.progress-bar-gold {
+  background-color: var(--gold);
+}
+
+.avatar-small {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+/* CSS: DASHBOARD ADMINISTRATOR */
+
+.nav-pills-clean .nav-link {
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 0.875rem;
+  border-radius: 10px;
+  padding: 0.6rem 1.1rem;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.nav-pills-clean .nav-link:hover {
+  color: var(--navy);
+  background-color: #f1f5f9;
+}
+
+.nav-pills-clean .nav-link.active {
+  background-color: var(--navy);
+  color: #ffffff;
+}
+
+.panel-box-clean {
+  background-color: #ffffff;
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 10px 30px -10px rgba(15, 23, 42, 0.04);
+}
+
+.table-clean th {
+  background-color: #f8fafc;
+  color: #475569;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  border-bottom: 1px solid var(--border-subtle);
+  padding: 0.85rem 1rem;
+}
+
+.table-clean td {
+  vertical-align: middle;
+  font-size: 0.88rem;
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.badge-status-valid {
+  background-color: #dcfce7;
+  color: #166534;
+  font-weight: 600;
+  font-size: 0.75rem;
+  padding: 0.35rem 0.65rem;
+  border-radius: 6px;
+}
+
+.badge-status-pending {
+  background-color: #f1f5f9;
+  color: #475569;
+  font-weight: 600;
+  font-size: 0.75rem;
+  padding: 0.35rem 0.65rem;
+  border-radius: 6px;
+}
+
+.badge-status-invalid {
+  background-color: #fee2e2;
+  color: #991b1b;
+  font-weight: 600;
+  font-size: 0.75rem;
+  padding: 0.35rem 0.65rem;
+  border-radius: 6px;
+}
+
+/* Pengaturan saat Cetak / Ekspor PDF */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background-color: #ffffff !important;
+  }
+  .panel-box-clean, .stat-box-clean {
+    border: 1px solid #ccc !important;
+    box-shadow: none !important;
+  }
+}

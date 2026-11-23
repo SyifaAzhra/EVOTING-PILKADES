@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>E-Voting Pilkades — Dashboard Administrator</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+  <!-- Navbar Minimalis -->
+  <header class="navbar-minimal no-print">
+    <div class="container d-flex justify-content-between align-items-center">
+      <a href="admin-dashboard.html" class="d-flex align-items-center gap-2 text-decoration-none">
+        <span class="brand-mark"><i class="bi bi-shield-check"></i></span>
+        <div>
+          <span class="fw-bold text-dark d-block lh-1">Dashboard Admin</span>
+          <small class="text-muted" style="font-size: 0.72rem;" data-nama-desa>Desa Sukamaju</small>
+        </div>
+      </a>
+
+      <div class="d-flex align-items-center gap-2">
+        <a href="hasil.html" target="_blank" class="nav-link-clean">Lihat Hasil Live</a>
+        <button type="button" id="adminLogoutBtn" class="btn-admin-minimal">Keluar</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Konten Utama -->
+  <main class="container py-4 py-md-5">
+    
+    <!-- Header & Aksi Cepat -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end mb-4 gap-3">
+      <div>
+        <div class="accent-line"></div>
+        <h3 class="fw-bold mb-1">Panel Kendali Pilkades <span data-nama-desa>Desa Sukamaju</span></h3>
+        <p class="text-muted small mb-0">Kelola daftar pemilih, kandidat, verifikasi suara, dan laporan rekapitulasi[cite: 14].</p>
+      </div>
+      <div class="d-flex gap-2 no-print">
+        <button type="button" class="btn-outline-clean btn-sm" onclick="exportLaporanCSV()">
+          <i class="bi bi-file-earmark-spreadsheet me-1"></i> Ekspor Excel (CSV)
+        </button>
+        <button type="button" class="btn-outline-clean btn-sm" onclick="window.print()">
+          <i class="bi bi-printer me-1"></i> Cetak / PDF
+        </button>
+      </div>
+    </div>
+
+    <!-- 4 Kartu Statistik Sesuai Mockup Proposal -->
+    <div class="row g-3 mb-4">
+      <div class="col-6 col-lg-3">
+        <div class="stat-box-clean">
+          <span class="text-muted small d-block mb-1">Total Pemilih (DPT)</span>
+          <h3 class="fw-bold mb-0" id="dashTotalPemilih">0</h3>
+        </div>
+      </div>
+      <div class="col-6 col-lg-3">
+        <div class="stat-box-clean">
+          <span class="text-muted small d-block mb-1">Jumlah Kandidat</span>
+          <h3 class="fw-bold mb-0" id="dashTotalKandidat">0</h3>
+        </div>
+      </div>
+      <div class="col-6 col-lg-3">
+        <div class="stat-box-clean">
+          <span class="text-muted small d-block mb-1">Sudah Memilih</span>
+          <h3 class="fw-bold text-success mb-0" id="dashSudahMemilih">0</h3>
+        </div>
+      </div>
+      <div class="col-6 col-lg-3">
+        <div class="stat-box-clean">
+          <span class="text-muted small d-block mb-1">Suara Valid</span>
+          <h3 class="fw-bold text-navy mb-0" id="dashSuaraValid">0</h3>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigasi Tab Modul Administrator -->
+    <ul class="nav nav-pills nav-pills-clean gap-2 mb-4 no-print" id="adminTabs" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#tab-pemilih" type="button">
+          Manajemen Pemilih[cite: 14]
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-kandidat" type="button">
+          Manajemen Kandidat[cite: 14]
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-verifikasi" type="button">
+          Verifikasi & Laporan Hasil[cite: 14]
+        </button>
+      </li>
+    </ul>
+
+    <!-- Isi Tab -->
+    <div class="tab-content">
+      
+      <!-- TAB 1: MANAJEMEN PEMILIH -->
+      <div class="tab-pane fade show active" id="tab-pemilih" role="tabpanel">
+        <div class="panel-box-clean">
+          <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center mb-3 gap-2">
+            <div>
+              <h5 class="fw-bold mb-0">Daftar Pemilih Tetap (DPT)</h5>
+              <small class="text-muted">Tambah warga, buat kode akses unik, atau unduh daftar kode akses.</small>
+            </div>
+            <div class="d-flex gap-2 no-print">
+              <button type="button" class="btn-outline-clean btn-sm" onclick="downloadKodeAksesCSV()">
+                <i class="bi bi-download me-1"></i> Unduh Kode Akses
+              </button>
+              <button type="button" class="btn btn-submit-clean btn-sm px-3" data-bs-toggle="modal" data-bs-target="#addVoterModal">
+                + Tambah Pemilih
+              </button>
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table table-clean mb-0">
+              <thead>
+                <tr>
+                  <th>NIK</th>
+                  <th>Nama Lengkap</th>
+                  <th>Kode Akses</th>
+                  <th>Status Memilih</th>
+                  <th>Validitas</th>
+                  <th class="text-end no-print">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="voterTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 2: MANAJEMEN KANDIDAT -->
+      <div class="tab-pane fade" id="tab-kandidat" role="tabpanel">
+        <div class="panel-box-clean">
+          <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center mb-3 gap-2">
+            <div>
+              <h5 class="fw-bold mb-0">Daftar Calon Kepala Desa</h5>
+              <small class="text-muted">Atur profil kandidat, nomor urut, dan visi-misi[cite: 14, 15].</small>
+            </div>
+            <button type="button" class="btn btn-submit-clean btn-sm px-3 no-print" data-bs-toggle="modal" data-bs-target="#addCandidateModal">
+              + Tambah Kandidat
+            </button>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table table-clean mb-0">
+              <thead>
+                <tr>
+                  <th>No. Urut</th>
+                  <th>Kandidat</th>
+                  <th>Visi Singkat</th>
+                  <th>Perolehan Suara</th>
+                  <th class="text-end no-print">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="candidateTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 3: VERIFIKASI & LAPORAN HASIL -->
+      <div class="tab-pane fade" id="tab-verifikasi" role="tabpanel">
+        <div class="row g-4">
+          <div class="col-lg-7">
+            <div class="panel-box-clean h-100">
+              <h5 class="fw-bold mb-1">Verifikasi Validitas Suara</h5>
+              <p class="text-muted small mb-3">Pantau keabsahan suara masuk dan cegah duplikasi suara[cite: 14, 15].</p>
+              <div class="table-responsive">
+                <table class="table table-clean mb-0">
+                  <thead>
+                    <tr>
+                      <th>NIK Pemilih</th>
+                      <th>Nama</th>
+                      <th>Status Suara</th>
+                      <th class="text-end no-print">Verifikasi</th>
+                    </tr>
+                  </thead>
+                  <tbody id="verificationTableBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-5">
+            <div class="panel-box-clean h-100 d-flex flex-column justify-content-between">
+              <div>
+                <h5 class="fw-bold mb-1">Rekapitulasi Akhir</h5>
+                <p class="text-muted small mb-4">Ringkasan perolehan suara sah saat ini[cite: 14].</p>
+                <div id="adminSummaryList" class="d-flex flex-column gap-3 mb-4"></div>
+              </div>
+
+              <div class="border-top pt-3 no-print">
+                <button type="button" class="btn btn-outline-danger btn-sm w-100 rounded-3" onclick="resetDemoData()">
+                  <i class="bi bi-arrow-counterclockwise me-1"></i> Reset Semua Data ke Awal (Demo)
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- MODAL TAMBAH PEMILIH -->
+  <div class="modal fade" id="addVoterModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 rounded-4 shadow">
+        <div class="modal-header border-bottom px-4 py-3">
+          <h5 class="modal-title fw-bold">Tambah Data Pemilih</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <form id="addVoterForm">
+          <div class="modal-body p-4">
+            <div class="mb-3">
+              <label class="form-label-clean">NIK (16 Digit)</label>
+              <input type="text" class="form-control input-clean" id="newVoterNik" maxlength="16" placeholder="Contoh: 3578010505050005" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label-clean">Nama Lengkap</label>
+              <input type="text" class="form-control input-clean" id="newVoterName" placeholder="Nama warga sesuai KTP" required>
+            </div>
+            <div class="mb-2">
+              <label class="form-label-clean">Kode Akses Unik</label>
+              <div class="input-group">
+                <input type="text" class="form-control input-clean" id="newVoterCode" placeholder="Klik acak atau ketik manual" required>
+                <button type="button" class="btn-outline-clean" onclick="generateRandomCode()">Acak Kode</button>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer border-top px-4 py-3">
+            <button type="button" class="btn-outline-clean" data-bs-dismiss="modal">Batal</button>
+            <button type="submit" class="btn btn-submit-clean">Simpan Pemilih</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL TAMBAH KANDIDAT -->
+  <div class="modal fade" id="addCandidateModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 rounded-4 shadow">
+        <div class="modal-header border-bottom px-4 py-3">
+          <h5 class="modal-title fw-bold">Tambah Kandidat Kepala Desa</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <form id="addCandidateForm">
+          <div class="modal-body p-4">
+            <div class="row g-3 mb-3">
+              <div class="col-4">
+                <label class="form-label-clean">No. Urut</label>
+                <input type="number" class="form-control input-clean" id="newCandNo" min="1" required>
+              </div>
+              <div class="col-8">
+                <label class="form-label-clean">Nama Kandidat</label>
+                <input type="text" class="form-control input-clean" id="newCandName" placeholder="Nama lengkap & gelar" required>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label-clean">URL Foto (Opsional)</label>
+              <input type="url" class="form-control input-clean" id="newCandPhoto" placeholder="Kosongkan untuk avatar otomatis">
+            </div>
+            <div class="mb-3">
+              <label class="form-label-clean">Visi</label>
+              <textarea class="form-control input-clean" id="newCandVisi" rows="2" required></textarea>
+            </div>
+            <div class="mb-2">
+              <label class="form-label-clean">Misi</label>
+              <textarea class="form-control input-clean" id="newCandMisi" rows="3" required></textarea>
+            </div>
+          </div>
+          <div class="modal-footer border-top px-4 py-3">
+            <button type="button" class="btn-outline-clean" data-bs-dismiss="modal">Batal</button>
+            <button type="submit" class="btn btn-submit-clean">Simpan Kandidat</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer Minimalis -->
+  <footer class="footer-minimal py-3 mt-auto no-print">
+    <div class="container d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2">
+      <span>© 2026 Panitia Pemilihan Kepala <strong class="text-dark fw-semibold" data-nama-desa>Desa Sukamaju</strong></span>
+      <span>Sistem Informasi E-Voting Pilkades</span>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/data.js"></script>
+  <script>
+    // Proteksi halaman admin
+    if (sessionStorage.getItem('admin_logged_in') !== 'true') {
+      window.location.href = 'admin-login.html';
+    }
+
+    document.getElementById('adminLogoutBtn').addEventListener('click', () => {
+      sessionStorage.removeItem('admin_logged_in');
+      window.location.href = 'admin-login.html';
+    });
+
+    function getVoters() {
+      return JSON.parse(localStorage.getItem('evoting_voters')) || [];
+    }
+
+    function getCandidates() {
+      return JSON.parse(localStorage.getItem('evoting_candidates')) || [];
+    }
+
+    function renderDashboard() {
+      const voters = getVoters();
+      const candidates = getCandidates();
+
+      const sudahMemilihList = voters.filter(v => v.sudahMemilih);
+      const suaraValidList = voters.filter(v => v.sudahMemilih && v.statusValid);
+
+      // Update 4 Kartu Statistik
+      document.getElementById('dashTotalPemilih').textContent = voters.length;
+      document.getElementById('dashTotalKandidat').textContent = candidates.length;
+      document.getElementById('dashSudahMemilih').textContent = sudahMemilihList.length;
+      document.getElementById('dashSuaraValid').textContent = suaraValidList.length;
+
+      // Render Tabel Pemilih
+      const voterBody = document.getElementById('voterTableBody');
+      voterBody.innerHTML = '';
+      voters.forEach((v, idx) => {
+        const statusMemilihBadge = v.sudahMemilih
+          ? '<span class="badge-status-valid">Sudah Memilih</span>'
+          : '<span class="badge-status-pending">Belum Memilih</span>';
+
+        const validBadge = v.statusValid
+          ? '<span class="text-success fw-semibold small"><i class="bi bi-check-circle-fill me-1"></i>Valid</span>'
+          : '<span class="text-danger fw-semibold small"><i class="bi bi-exclamation-triangle-fill me-1"></i>Tidak Valid</span>';
+
+        voterBody.innerHTML += `
+          <tr>
+            <td class="fw-semibold">${v.nik}</td>
+            <td>${v.nama}</td>
+            <td><code class="text-dark bg-light px-2 py-1 rounded border">${v.kodeAkses}</code></td>
+            <td>${statusMemilihBadge}</td>
+            <td>${validBadge}</td>
+            <td class="text-end no-print">
+              <button class="btn btn-sm btn-outline-danger rounded-2" onclick="deleteVoter(${idx})" title="Hapus Pemilih">
+                <i class="bi bi-trash"></i>
+              </button>
+            </td>
+          </tr>
+        `;
+      });
+
+      // Render Tabel Kandidat
+      const candBody = document.getElementById('candidateTableBody');
+      candBody.innerHTML = '';
+      candidates.forEach((c, idx) => {
+        candBody.innerHTML += `
+          <tr>
+            <td><span class="badge bg-dark">No. ${c.noUrut}</span></td>
+            <td>
+              <div class="d-flex align-items-center gap-2">
+                <img src="${c.foto}" alt="${c.nama}" class="avatar-small">
+                <span class="fw-bold">${c.nama}</span>
+              </div>
+            </td>
+            <td class="text-muted small" style="max-width: 280px;">${c.visi}</td>
+            <td class="fw-bold">${c.jumlahSuara} suara</td>
+            <td class="text-end no-print">
+              <button class="btn btn-sm btn-outline-danger rounded-2" onclick="deleteCandidate(${idx})" title="Hapus Kandidat">
+                <i class="bi bi-trash"></i>
+              </button>
+            </td>
+          </tr>
+        `;
+      });
+
+      // Render Tabel Verifikasi Suara
+      const verifBody = document.getElementById('verificationTableBody');
+      verifBody.innerHTML = '';
+      sudahMemilihList.forEach(v => {
+        const statusBadge = v.statusValid
+          ? '<span class="badge-status-valid">Suara Valid</span>'
+          : '<span class="badge-status-invalid">Ditandai Ganda / Invalid</span>';
+
+        const toggleBtnText = v.statusValid ? 'Tandai Invalid' : 'Sahkan Suara';
+        const toggleBtnClass = v.statusValid ? 'btn-outline-warning' : 'btn-outline-success';
+
+        verifBody.innerHTML += `
+          <tr>
+            <td class="small fw-semibold">${v.nik}</td>
+            <td>${v.nama}</td>
+            <td>${statusBadge}</td>
+            <td class="text-end no-print">
+              <button class="btn btn-sm ${toggleBtnClass} rounded-2" onclick="toggleValiditas('${v.nik}')">
+                ${toggleBtnText}
+              </button>
+            </td>
+          </tr>
+        `;
+      });
+
+      if (sudahMemilihList.length === 0) {
+        verifBody.innerHTML = '<tr><td colspan="4" class="text-center text-muted py-4">Belum ada suara yang masuk.</td></tr>';
+      }
+
+      // Render Ringkasan Akhir
+      const summaryBox = document.getElementById('adminSummaryList');
+      summaryBox.innerHTML = '';
+      const totalSuara = candidates.reduce((sum, c) => sum + c.jumlahSuara, 0);
+      candidates.forEach(c => {
+        const pct = totalSuara > 0 ? ((c.jumlahSuara / totalSuara) * 100).toFixed(1) : 0;
+        summaryBox.innerHTML += `
+          <div class="p-3 bg-light rounded-3 border">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <span class="fw-bold small">No. ${c.noUrut} — ${c.nama}</span>
+              <span class="fw-bold text-navy">${c.jumlahSuara} Suara (${pct}%)</span>
+            </div>
+            <div class="progress progress-clean" style="height: 8px;">
+              <div class="progress-bar progress-bar-green" style="width: ${pct}%"></div>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    // Generate Kode Akses Acak
+    function generateRandomCode() {
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+      let result = 'PILIH-';
+      for (let i = 0; i < 4; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      document.getElementById('newVoterCode').value = result;
+    }
+
+    // Tambah Pemilih Baru
+    document.getElementById('addVoterForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const nik = document.getElementById('newVoterNik').value.trim();
+      const nama = document.getElementById('newVoterName').value.trim();
+      const kodeAkses = document.getElementById('newVoterCode').value.trim();
+
+      const voters = getVoters();
+      if (voters.some(v => v.nik === nik)) {
+        alert('NIK sudah terdaftar di DPT!');
+        return;
+      }
+
+      voters.push({ nik, nama, kodeAkses, sudahMemilih: false, kandidatDipilih: null, statusValid: true });
+      localStorage.setItem('evoting_voters', JSON.stringify(voters));
+
+      this.reset();
+      bootstrap.Modal.getInstance(document.getElementById('addVoterModal')).hide();
+      renderDashboard();
+    });
+
+    // Hapus Pemilih
+    function deleteVoter(index) {
+      if (!confirm('Hapus data pemilih ini?')) return;
+      const voters = getVoters();
+      voters.splice(index, 1);
+      localStorage.setItem('evoting_voters', JSON.stringify(voters));
+      renderDashboard();
+    }
+
+    // Tambah Kandidat Baru
+    document.getElementById('addCandidateForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const noUrut = parseInt(document.getElementById('newCandNo').value, 10);
+      const nama = document.getElementById('newCandName').value.trim();
+      const fotoInput = document.getElementById('newCandPhoto').value.trim();
+      const visi = document.getElementById('newCandVisi').value.trim();
+      const misi = document.getElementById('newCandMisi').value.trim();
+
+      const candidates = getCandidates();
+      const newId = candidates.length > 0 ? Math.max(...candidates.map(c => c.id)) + 1 : 1;
+      const foto = fotoInput || `https://placehold.co/300x300/1b365d/ffffff?text=Kandidat+${noUrut}`;
+
+      candidates.push({ id: newId, noUrut, nama, foto, visi, misi, jumlahSuara: 0 });
+      localStorage.setItem('evoting_candidates', JSON.stringify(candidates));
+
+      this.reset();
+      bootstrap.Modal.getInstance(document.getElementById('addCandidateModal')).hide();
+      renderDashboard();
+    });
+
+    // Hapus Kandidat
+    function deleteCandidate(index) {
+      if (!confirm('Hapus kandidat ini?')) return;
+      const candidates = getCandidates();
+      candidates.splice(index, 1);
+      localStorage.setItem('evoting_candidates', JSON.stringify(candidates));
+      renderDashboard();
+    }
+
+    // Ubah Status Validitas Suara (Sinkronkan juga ke jumlah suara kandidat)
+    function toggleValiditas(nik) {
+      const voters = getVoters();
+      const candidates = getCandidates();
+
+      const updatedVoters = voters.map(v => {
+        if (v.nik === nik) {
+          const newStatus = !v.statusValid;
+          // Sesuaikan perolehan suara kandidat jika suara dibatalkan/disahkan kembali
+          candidates.forEach(c => {
+            if (c.id === v.kandidatDipilih) {
+              c.jumlahSuara = newStatus ? c.jumlahSuara + 1 : Math.max(0, c.jumlahSuara - 1);
+            }
+          });
+          return { ...v, statusValid: newStatus };
+        }
+        return v;
+      });
+
+      localStorage.setItem('evoting_voters', JSON.stringify(updatedVoters));
+      localStorage.setItem('evoting_candidates', JSON.stringify(candidates));
+      renderDashboard();
+    }
+
+    // Unduh Kode Akses Pemilih (CSV)
+    function downloadKodeAksesCSV() {
+      const voters = getVoters();
+      let csv = 'NIK,Nama Pemilih,Kode Akses,Status Memilih\n';
+      voters.forEach(v => {
+        csv += `"${v.nik}","${v.nama}","${v.kodeAkses}","${v.sudahMemilih ? 'Sudah' : 'Belum'}"\n`;
+      });
+      triggerCSVDownload(csv, `Kode_Akses_Pilkades_${DESA_CONFIG.namaDesa.replace(/\s+/g, '_')}.csv`);
+    }
+
+    // Ekspor Laporan Hasil Rekap (CSV / Excel)
+    function exportLaporanCSV() {
+      const candidates = getCandidates();
+      const total = candidates.reduce((s, c) => s + c.jumlahSuara, 0);
+      let csv = 'No Urut,Nama Kandidat,Jumlah Suara,Persentase\n';
+      candidates.forEach(c => {
+        const pct = total > 0 ? ((c.jumlahSuara / total) * 100).toFixed(1) + '%' : '0%';
+        csv += `${c.noUrut},"${c.nama}",${c.jumlahSuara},"${pct}"\n`;
+      });
+      triggerCSVDownload(csv, `Laporan_Hasil_Pilkades_${DESA_CONFIG.namaDesa.replace(/\s+/g, '_')}.csv`);
+    }
+
+    function triggerCSVDownload(csvContent, fileName) {
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // Reset Data Demo
+    function resetDemoData() {
+      if (!confirm('Reset semua data pemilih dan suara kembali ke pengaturan awal demo?')) return;
+      localStorage.removeItem('evoting_voters');
+      localStorage.removeItem('evoting_candidates');
+      initData();
+      renderDashboard();
+    }
+
+    renderDashboard();
+  </script>
+</body>
+</html>

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>E-Voting Pilkades — Pilih Kepala Desa</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+  <!-- Navbar Minimalis -->
+  <header class="navbar-minimal">
+    <div class="container d-flex justify-content-between align-items-center">
+      <a href="#" class="d-flex align-items-center gap-2 text-decoration-none">
+        <span class="brand-mark"><i class="bi bi-check2-square"></i></span>
+        <div>
+          <span class="fw-bold text-dark d-block lh-1">E-Voting Pilkades</span>
+          <small class="text-muted" style="font-size: 0.72rem;" data-nama-desa>Desa Sukamaju</small>
+        </div>
+      </a>
+
+      <div class="d-flex align-items-center gap-3">
+        <span class="text-muted small d-none d-md-inline">
+          Pemilih: <strong class="text-dark" id="voterNameLabel">-</strong>
+        </span>
+        <button type="button" id="logoutBtn" class="btn-admin-minimal">Keluar</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Konten Utama -->
+  <main class="container py-5">
+    <div class="mb-4">
+      <div class="accent-line"></div>
+      <h3 class="fw-bold mb-1">Pilih Calon Kepala <span data-nama-desa>Desa Sukamaju</span></h3>
+      <p class="text-muted small mb-0">Tinjau visi-misi masing-masing kandidat, lalu klik <strong>Pilih</strong> untuk menggunakan hak suara Anda.</p>
+    </div>
+
+    <!-- Grid Kartu Kandidat -->
+    <div class="row g-4" id="candidateList">
+      <!-- Dirender otomatis oleh JavaScript -->
+    </div>
+  </main>
+
+  <!-- Modal Detail Visi & Misi -->
+  <div class="modal fade" id="visiMisiModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 rounded-4 shadow">
+        <div class="modal-header border-bottom px-4 py-3">
+          <div>
+            <span class="badge bg-light text-dark border mb-1" id="modalNoUrut">No. Urut 1</span>
+            <h5 class="modal-title fw-bold mb-0" id="modalNamaKandidat">Nama Kandidat</h5>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+        </div>
+        <div class="modal-body p-4">
+          <div class="mb-3">
+            <h6 class="fw-bold text-uppercase small text-muted mb-1">Visi</h6>
+            <p class="mb-0 text-dark" id="modalVisi">-</p>
+          </div>
+          <div>
+            <h6 class="fw-bold text-uppercase small text-muted mb-1">Misi</h6>
+            <p class="mb-0 text-dark" style="white-space: pre-line;" id="modalMisi">-</p>
+          </div>
+        </div>
+        <div class="modal-footer border-top px-4 py-3">
+          <button type="button" class="btn-outline-clean" data-bs-dismiss="modal">Tutup</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Konfirmasi Pilihan -->
+  <div class="modal fade" id="confirmVoteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+      <div class="modal-content border-0 rounded-4 shadow text-center p-3">
+        <div class="modal-body">
+          <div class="accent-line mx-auto"></div>
+          <h5 class="fw-bold mb-2">Konfirmasi Pilihan</h5>
+          <p class="text-muted small mb-4">
+            Apakah Anda yakin memilih <strong class="text-dark" id="confirmCandidateName">-</strong> (<span id="confirmCandidateNo">-</span>)? Pilihan tidak dapat diubah setelah dikirim.
+          </p>
+          <div class="d-grid gap-2">
+            <button type="button" class="btn btn-submit-clean" id="submitVoteBtn">Ya, Kirim Suara</button>
+            <button type="button" class="btn-outline-clean" data-bs-dismiss="modal">Batal</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer Minimalis -->
+  <footer class="footer-minimal py-3 mt-auto">
+    <div class="container d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2">
+      <span>© 2026 Panitia Pemilihan Kepala <strong class="text-dark fw-semibold" data-nama-desa>Desa Sukamaju</strong></span>
+      <span>Satu Pemilih Satu Suara</span>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/data.js"></script>
+  <script>
+    // Cek sesi login pemilih
+    const currentVoter = JSON.parse(sessionStorage.getItem('current_voter'));
+    if (!currentVoter || currentVoter.sudahMemilih) {
+      window.location.href = 'index.html';
+    } else {
+      document.getElementById('voterNameLabel').textContent = currentVoter.nama;
+    }
+
+    const candidates = JSON.parse(localStorage.getItem('evoting_candidates')) || [];
+    const candidateContainer = document.getElementById('candidateList');
+    let selectedCandidateId = null;
+
+    // Render kartu kandidat
+    candidates.forEach(cand => {
+      const col = document.createElement('div');
+      col.className = 'col-md-6 col-lg-4';
+      col.innerHTML = `
+        <div class="candidate-card-clean">
+          <div class="candidate-photo-box">
+            <span class="urut-pill">No. Urut ${cand.noUrut}</span>
+            <img src="${cand.foto}" alt="${cand.nama}">
+          </div>
+          <div class="p-4 d-flex flex-column flex-grow-1">
+            <h5 class="fw-bold mb-2">${cand.nama}</h5>
+            <p class="text-muted small mb-4 flex-grow-1">"${cand.visi}"</p>
+            <div class="d-flex gap-2">
+              <button type="button" class="btn-outline-clean flex-fill" onclick="showVisiMisi(${cand.id})">
+                Visi & Misi
+              </button>
+              <button type="button" class="btn btn-submit-clean flex-fill" onclick="openConfirmModal(${cand.id})">
+                Pilih
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+      candidateContainer.appendChild(col);
+    });
+
+    // Tampilkan Modal Visi & Misi
+    function showVisiMisi(id) {
+      const cand = candidates.find(c => c.id === id);
+      if (!cand) return;
+      document.getElementById('modalNoUrut').textContent = `No. Urut ${cand.noUrut}`;
+      document.getElementById('modalNamaKandidat').textContent = cand.nama;
+      document.getElementById('modalVisi').textContent = cand.visi;
+      document.getElementById('modalMisi').textContent = cand.misi;
+      new bootstrap.Modal(document.getElementById('visiMisiModal')).show();
+    }
+
+    // Tampilkan Modal Konfirmasi
+    function openConfirmModal(id) {
+      const cand = candidates.find(c => c.id === id);
+      if (!cand) return;
+      selectedCandidateId = id;
+      document.getElementById('confirmCandidateName').textContent = cand.nama;
+      document.getElementById('confirmCandidateNo').textContent = `No. Urut ${cand.noUrut}`;
+      new bootstrap.Modal(document.getElementById('confirmVoteModal')).show();
+    }
+
+    // Proses Simpan Suara ke localStorage
+    document.getElementById('submitVoteBtn').addEventListener('click', function() {
+      if (!selectedCandidateId) return;
+
+      const updatedCandidates = candidates.map(c => {
+        if (c.id === selectedCandidateId) {
+          return { ...c, jumlahSuara: c.jumlahSuara + 1 };
+        }
+        return c;
+      });
+      localStorage.setItem('evoting_candidates', JSON.stringify(updatedCandidates));
+
+      const voters = JSON.parse(localStorage.getItem('evoting_voters')) || [];
+      const updatedVoters = voters.map(v => {
+        if (v.nik === currentVoter.nik) {
+          return { ...v, sudahMemilih: true, kandidatDipilih: selectedCandidateId };
+        }
+        return v;
+      });
+      localStorage.setItem('evoting_voters', JSON.stringify(updatedVoters));
+
+      sessionStorage.removeItem('current_voter');
+      window.location.href = 'hasil.html?voted=1';
+    });
+
+    // Tombol Keluar
+    document.getElementById('logoutBtn').addEventListener('click', function() {
+      sessionStorage.removeItem('current_voter');
+      window.location.href = 'index.html';
+    });
+  </script>
+</body>
+</html>

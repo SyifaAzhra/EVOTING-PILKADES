@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>E-Voting Pilkades — Hasil Sementara</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+  <!-- Navbar Minimalis -->
+  <header class="navbar-minimal">
+    <div class="container d-flex justify-content-between align-items-center">
+      <a href="index.html" class="d-flex align-items-center gap-2 text-decoration-none">
+        <span class="brand-mark"><i class="bi bi-check2-square"></i></span>
+        <div>
+          <span class="fw-bold text-dark d-block lh-1">E-Voting Pilkades</span>
+          <small class="text-muted" style="font-size: 0.72rem;" data-nama-desa>Desa Sukamaju</small>
+        </div>
+      </a>
+
+      <div class="d-flex align-items-center gap-2">
+        <a href="index.html" class="nav-link-clean">Halaman Login</a>
+        <a href="admin-login.html" class="btn-admin-minimal">Admin</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Konten Utama -->
+  <main class="container py-5" style="max-width: 820px;">
+    
+    <!-- Notifikasi Sukses Memilih -->
+    <div id="votedSuccessAlert" class="alert alert-success border-0 rounded-3 d-none mb-4 d-flex align-items-center gap-2">
+      <i class="bi bi-check-circle-fill"></i>
+      <span>Terima kasih! Suara Anda telah berhasil dicatat ke dalam sistem Pilkades <strong data-nama-desa>Desa Sukamaju</strong>.</span>
+    </div>
+
+    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-end mb-4 gap-2">
+      <div>
+        <div class="accent-line"></div>
+        <h3 class="fw-bold mb-1">Hasil Sementara Pilkades <span data-nama-desa>Desa Sukamaju</span></h3>
+        <p class="text-muted small mb-0">Rekapitulasi perolehan suara masuk secara otomatis.</p>
+      </div>
+      <button type="button" class="btn-outline-clean btn-sm" onclick="location.reload()">
+        <i class="bi bi-arrow-clockwise me-1"></i> Perbarui Data
+      </button>
+    </div>
+
+    <!-- Ringkasan Angka -->
+    <div class="row g-3 mb-4">
+      <div class="col-6 col-md-4">
+        <div class="stat-box-clean">
+          <span class="text-muted small d-block mb-1">Total DPT</span>
+          <h4 class="fw-bold mb-0" id="statTotalDpt">0</h4>
+        </div>
+      </div>
+      <div class="col-6 col-md-4">
+        <div class="stat-box-clean">
+          <span class="text-muted small d-block mb-1">Total Suara Masuk</span>
+          <h4 class="fw-bold text-success mb-0" id="statSuaraMasuk">0</h4>
+        </div>
+      </div>
+      <div class="col-12 col-md-4">
+        <div class="stat-box-clean">
+          <span class="text-muted small d-block mb-1">Partisipasi Pemilih</span>
+          <h4 class="fw-bold mb-0" id="statPartisipasi">0%</h4>
+        </div>
+      </div>
+    </div>
+
+    <!-- Kartu Perolehan Suara -->
+    <div class="result-card-clean">
+      <h6 class="fw-bold mb-4">Perolehan Suara Kandidat</h6>
+      <div id="resultList" class="d-flex flex-column gap-4">
+        <!-- Dirender otomatis oleh JavaScript -->
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Footer Minimalis -->
+  <footer class="footer-minimal py-3 mt-auto">
+    <div class="container d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2">
+      <span>© 2026 Panitia Pemilihan Kepala <strong class="text-dark fw-semibold" data-nama-desa>Desa Sukamaju</strong></span>
+      <span>Satu Pemilih Satu Suara</span>
+    </div>
+  </footer>
+
+  <script src="assets/data.js"></script>
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('voted') === '1') {
+      document.getElementById('votedSuccessAlert').classList.remove('d-none');
+    }
+
+    const voters = JSON.parse(localStorage.getItem('evoting_voters')) || [];
+    const candidates = JSON.parse(localStorage.getItem('evoting_candidates')) || [];
+
+    const totalDpt = voters.length;
+    const totalSuaraMasuk = candidates.reduce((sum, c) => sum + c.jumlahSuara, 0);
+    const partisipasi = totalDpt > 0 ? ((totalSuaraMasuk / totalDpt) * 100).toFixed(1) : 0;
+
+    document.getElementById('statTotalDpt').textContent = totalDpt;
+    document.getElementById('statSuaraMasuk').textContent = totalSuaraMasuk;
+    document.getElementById('statPartisipasi').textContent = `${partisipasi}%`;
+
+    const barColors = ['progress-bar-navy', 'progress-bar-green', 'progress-bar-gold'];
+    const resultContainer = document.getElementById('resultList');
+
+    candidates.forEach((cand, index) => {
+      const persen = totalSuaraMasuk > 0 ? ((cand.jumlahSuara / totalSuaraMasuk) * 100).toFixed(1) : 0;
+      const barClass = barColors[index % barColors.length];
+
+      const item = document.createElement('div');
+      item.innerHTML = `
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <div class="d-flex align-items-center gap-3">
+            <img src="${cand.foto}" alt="${cand.nama}" class="avatar-small">
+            <div>
+              <span class="badge bg-light text-dark border me-1">No. ${cand.noUrut}</span>
+              <span class="fw-bold">${cand.nama}</span>
+            </div>
+          </div>
+          <div class="text-end">
+            <span class="fw-bold fs-5">${persen}%</span>
+            <small class="text-muted d-block">${cand.jumlahSuara} suara</small>
+          </div>
+        </div>
+        <div class="progress progress-clean">
+          <div class="progress-bar ${barClass}" role="progressbar" style="width: ${persen}%"></div>
+        </div>
+      `;
+      resultContainer.appendChild(item);
+    });
+  </script>
+</body>
+</html>
